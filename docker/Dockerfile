@@ -20,8 +20,7 @@ RUN set -x \
     && python3 -m pip install pip --upgrade \
     && python3 -m pip install virtualenv \
     # Set permissions
-    && chown -R 1000.1000 $HOME \
-    && virtualenv -p python3 env
+    && chown -R 1000.1000 $HOME
 
 # Copy files
 ADD *.sh $HOME/
@@ -31,6 +30,8 @@ RUN set -x \
     # Create 'app' dir and empty file
     && mkdir -p $HOME/src \
     && echo 'print("Volume não foi montado em /app/src")' > $HOME/src/empty.py \
+    # HACK to fix volumes permissions
+    && mkdir -p $HOME/data/nothing $HOME/env/nothing \
     # Set permissions
     && chown -R 1000.1000 $HOME
 
