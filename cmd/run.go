@@ -23,18 +23,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// buildCmd represents the build command
-var buildCmd = &cobra.Command{
-	Use:   "build",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+// runCmd represents the run command
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "Executa o(s) script(s) para obtenção de dados",
+	Long: `Executa o script de obtenção de dados e gera os 
+arquivos CSV como saída.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Verifique se todos os arquivos estão dentro do diretório 'src':
+(o número no início do arquivo determina a ordem de execução)
+- ./meu-projeto/src/01-extrator-magistrados.py
+- ./meu-projeto/src/02-extrator-juizes.py
+- ./meu-projeto/src/03-extrator-politicos.py
+
+Além disso, os arquivos deverão ser enviados para o diretório 'data':
+- ./meu-projeto/data/magistrados.csv
+- ./meu-projeto/data/juizes.csv
+- ./meu-projeto/data/politicos.csv`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("build called")
+		fmt.Println("run called")
 
 		// Get current dir location
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -47,15 +54,15 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(buildCmd)
+	rootCmd.AddCommand(runCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// buildCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
