@@ -15,10 +15,10 @@
 package cmd
 
 import (
-	"log"
 	"path/filepath"
 	"os"
 	"fmt"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 )
@@ -43,13 +43,31 @@ Além disso, os arquivos deverão ser enviados para o diretório 'data':
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("run called")
 
-		// Get current dir location
-		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		// Get current path
+		currentPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
-				log.Fatal(err)
+			panic(err)
 		}
-		
-		fmt.Println(dir)
+
+		// Temp path
+		envPath := currentPath+"/.brasilio/env"
+		os.MkdirAll(envPath, os.ModePerm)
+
+		// Source code path
+		sourcePath := currentPath+"/src"
+
+		// Output data path
+		dataPath := currentPath+"/data"
+
+		// Run command
+		cmdStr := "sudo docker run --rm"+
+		fmt.Sprintf(" -v='%s:/app/src'", sourcePath) +
+		fmt.Sprintf(" -v='%s:/app/env'", envPath) +
+		fmt.Sprintf(" -v='%s:/app/data'", dataPath) +
+			" thenets/brasilio"
+		out, _ := exec.Command("/bin/sh", "-c", cmdStr).Output()  
+		fmt.Printf("%s", out)
+
 	},
 }
 

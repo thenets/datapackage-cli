@@ -20,15 +20,22 @@ RUN set -x \
     && python3 -m pip install pip --upgrade \
     && python3 -m pip install virtualenv \
     # Set permissions
-    && chown -R 1000.1000 $HOME
+    && chown -R 1000.1000 $HOME \
+    && virtualenv -p python3 env
 
 # Copy files
 ADD *.sh $HOME/
-RUN chmod +x $HOME/entrypoint.sh && \
-    chown -R 1000.1000 $HOME
+RUN set -x \
+    # Add entrypoint file
+    && chmod +x $HOME/entrypoint.sh \
+    # Create 'app' dir and empty file
+    && mkdir -p $HOME/src \
+    && echo 'print("Volume não foi montado em /app/src")' > $HOME/src/empty.py \
+    # Set permissions
+    && chown -R 1000.1000 $HOME
 
 # Python dependencies
 USER $USER
 
 CMD ["/app/entrypoint.sh"]
-VOLUME ["$HOME/src"]
+VOLUME ["$HOME/env", "$HOME/src", "$HOME/data"]
