@@ -1,0 +1,37 @@
+sudo: required
+
+services:
+  - docker
+
+language: go
+
+go:
+  - "1.x"
+
+before_install:
+- sudo apt-get update
+- sudo apt-get install -y make git
+- docker pull alpine
+
+stages:
+  - docker-image-build
+  - build-cli
+  - test
+
+jobs:
+  include:
+    - stage: docker-image-build
+      script: cd docker && make build
+    - stage: build-cli
+      script: make build
+    - stage: test
+      script: echo "Test not implemented yet!"
+
+notifications:
+  email: false
+  irc:
+    channels:
+      - "chat.freenode.net#thenets-opensource"
+    on_success: change # default: always
+    on_failure: always # default: always
+    use_notice: true
