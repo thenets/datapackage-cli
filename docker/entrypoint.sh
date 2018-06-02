@@ -1,10 +1,14 @@
 #!/bin/bash
 
+# Helper: Colors
+COLOR_CYAN='\033[0;36m'
+COLOR_DEFAULT='\033[0m'
+
 # Creater virtualenv if not exist 
 if [ ! -f env/bin/activate ]; then 
-    echo "# O virtualenv não foi encontrado."
-    echo "# Criando novo virtualenv..."
+    echo $(COLOR_CYAN)"# CRIANDO VIRTUALENV"$(COLOR_DEFAULT)
     virtualenv -p python3 env
+    echo ""
 fi
 
 # Active virtualenv
@@ -20,9 +24,8 @@ if [ -f $PIP_FILE ]; then
 
     # Install dependencies if not cached
     if [ ! "$md5" = "$md5_cached"  ]; then
-        echo "# Instalando novas bibliotecas..."
+        echo $(COLOR_CYAN)"# BAIXANDO DEPENDÊNCIAS"$(COLOR_DEFAULT)
         pip install -r src/pip-requirements.txt
-        echo "... instalado!"
         echo ""
         # cache new hash
         echo $md5 > $md5_cache_file
@@ -31,4 +34,5 @@ if [ -f $PIP_FILE ]; then
 fi
 
 # Run main script
-python src/*
+cd src/
+python *

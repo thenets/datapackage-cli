@@ -1,6 +1,10 @@
 FROM alpine
 
-MAINTAINER luiz@thenets.org
+LABEL   io.brasil="Brasil IO" \
+        io.brasil.cli="foo" \
+        version="0.1" \
+        description="Imagem do Brasil.io para executar os código de extração de dados." \
+        maintainer="luiz@thenets.org"
 
 # Main dependencies
 RUN apk --no-cache add \
@@ -11,7 +15,7 @@ RUN apk --no-cache add \
 ENV HOME=/app \
     USER=brasilio
 
-# Setup
+# Setup Python
 WORKDIR $HOME
 RUN set -x \
     # Add user
@@ -31,12 +35,11 @@ RUN set -x \
     && mkdir -p $HOME/src \
     && echo 'print("Volume não foi montado em /app/src")' > $HOME/src/empty.py \
     # HACK to fix volumes permissions
-    && mkdir -p $HOME/data/nothing $HOME/env/nothing \
+    && mkdir -p $HOME/env $HOME/src $HOME/package \
     # Set permissions
     && chown -R 1000.1000 $HOME
 
-# Python dependencies
+# Config
 USER $USER
-
 CMD ["/app/entrypoint.sh"]
-VOLUME ["$HOME/env", "$HOME/src", "$HOME/data"]
+VOLUME ["$HOME/env", "$HOME/src", "$HOME/package"]

@@ -36,10 +36,10 @@ Verifique se todos os arquivos estão dentro do diretório 'src':
 - ./meu-projeto/src/02-extrator-juizes.py
 - ./meu-projeto/src/03-extrator-politicos.py
 
-Além disso, os arquivos deverão ser enviados para o diretório 'data':
-- ./meu-projeto/data/magistrados.csv
-- ./meu-projeto/data/juizes.csv
-- ./meu-projeto/data/politicos.csv`,
+Além disso, os arquivos deverão ser enviados para o diretório 'package':
+- ./meu-projeto/package/magistrados.csv
+- ./meu-projeto/package/juizes.csv
+- ./meu-projeto/package/politicos.csv`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("run called")
 
@@ -49,32 +49,32 @@ Além disso, os arquivos deverão ser enviados para o diretório 'data':
 			panic(err)
 		}
 
-		// Temp path
-		envPath := currentPath+"/.brasilio/env"
+		// Virtualenv, source code and output path
+		envPath 	:= currentPath+"/.brasilio/env"
+		srcPath 	:= currentPath+"/src"
+		packagePath := currentPath+"/package"
+
+		// Create all paths if not exist
+		os.MkdirAll(srcPath, os.ModePerm)
 		os.MkdirAll(envPath, os.ModePerm)
+		os.MkdirAll(packagePath, os.ModePerm)
 
-		// Source code path
-		sourcePath := currentPath+"/src"
-
-		// Output data path
-		dataPath := currentPath+"/data"
-
-		// Run command
+		// Prepare command
 		cmdStr := "docker run --rm"+
-			fmt.Sprintf(" -v='%s:/app/src'", sourcePath) +
+			fmt.Sprintf(" -v='%s:/app/src'", srcPath) +
 			fmt.Sprintf(" -v='%s:/app/env'", envPath) +
-			fmt.Sprintf(" -v='%s:/app/data'", dataPath) +
+			fmt.Sprintf(" -v='%s:/app/package'", packagePath) +
 			" thenets/brasilio"
-		shellCmd := exec.Command("/bin/sh", "-c", cmdStr)
 
-		// Redirect output data
+		// Run command and redirect output data
+		shellCmd := exec.Command("/bin/sh", "-c", cmdStr)
 		shellCmd.Stdout = os.Stdout
 		shellCmd.Stderr = os.Stderr
 		shellCmd.Run()
 
-		// Output
-		out, _ := shellCmd.Output()  
-		fmt.Printf("%s", out)
+		// Finish
+		// out, _ := shellCmd.Output()  
+		// fmt.Printf("%s", out)
 	},
 }
 
