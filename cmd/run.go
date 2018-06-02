@@ -15,13 +15,14 @@
 package cmd
 
 import (
-	"path/filepath"
 	"os"
 	"fmt"
 	"os/exec"
 
 	"github.com/spf13/cobra"
+	"github.com/thenets/brasilio-cli/cmd/docker"
 )
+
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
@@ -43,30 +44,8 @@ Além disso, os arquivos deverão ser enviados para o diretório 'package':
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("run called")
 
-		// Get current path
-		currentPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			panic(err)
-		}
-
-		// Virtualenv, source code and output path
-		envPath 	:= currentPath+"/.brasilio/env"
-		srcPath 	:= currentPath+"/src"
-		packagePath := currentPath+"/package"
-
-		// Create all paths if not exist
-		os.MkdirAll(srcPath, os.ModePerm)
-		os.MkdirAll(envPath, os.ModePerm)
-		os.MkdirAll(packagePath, os.ModePerm)
-
-		// Prepare command
-		cmdStr := "docker run --rm"+
-			fmt.Sprintf(" -v='%s:/app/src'", srcPath) +
-			fmt.Sprintf(" -v='%s:/app/env'", envPath) +
-			fmt.Sprintf(" -v='%s:/app/package'", packagePath) +
-			" thenets/brasilio"
-
 		// Run command and redirect output data
+		cmdStr := getDockerCommand()
 		shellCmd := exec.Command("/bin/sh", "-c", cmdStr)
 		shellCmd.Stdout = os.Stdout
 		shellCmd.Stderr = os.Stderr
