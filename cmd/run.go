@@ -15,12 +15,8 @@
 package cmd
 
 import (
-	"os"
-	"fmt"
-	"os/exec"
-
 	"github.com/spf13/cobra"
-	"github.com/thenets/brasilio-cli/cmd/docker"
+	tools "github.com/thenets/brasilio-cli/cmd/tools"
 )
 
 
@@ -42,18 +38,10 @@ Além disso, os arquivos deverão ser enviados para o diretório 'package':
 - ./meu-projeto/package/juizes.csv
 - ./meu-projeto/package/politicos.csv`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
-
 		// Run command and redirect output data
-		cmdStr := getDockerCommand()
-		shellCmd := exec.Command("/bin/sh", "-c", cmdStr)
-		shellCmd.Stdout = os.Stdout
-		shellCmd.Stderr = os.Stderr
+		cmdStr := tools.GetDockerCommand("brasilio-build")
+		shellCmd := tools.NewCmdProcess(cmdStr, "brasilio-build")
 		shellCmd.Run()
-
-		// Finish
-		// out, _ := shellCmd.Output()  
-		// fmt.Printf("%s", out)
 	},
 }
 

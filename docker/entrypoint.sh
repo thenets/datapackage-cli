@@ -4,7 +4,7 @@
 COLOR_CYAN='\033[0;36m'
 COLOR_DEFAULT='\033[0m'
 
-# Creater virtualenv if not exist 
+# Creater virtualenv if not exist
 if [ ! -f env/bin/activate ]; then 
     echo $(COLOR_CYAN)"# CRIANDO VIRTUALENV"$(COLOR_DEFAULT)
     virtualenv -p python3 env
