@@ -60,14 +60,21 @@ Além disso, os arquivos deverão ser enviados para o diretório 'data':
 		dataPath := currentPath+"/data"
 
 		// Run command
-		cmdStr := "sudo docker run --rm"+
-		fmt.Sprintf(" -v='%s:/app/src'", sourcePath) +
-		fmt.Sprintf(" -v='%s:/app/env'", envPath) +
-		fmt.Sprintf(" -v='%s:/app/data'", dataPath) +
+		cmdStr := "docker run --rm"+
+			fmt.Sprintf(" -v='%s:/app/src'", sourcePath) +
+			fmt.Sprintf(" -v='%s:/app/env'", envPath) +
+			fmt.Sprintf(" -v='%s:/app/data'", dataPath) +
 			" thenets/brasilio"
-		out, _ := exec.Command("/bin/sh", "-c", cmdStr).Output()  
-		fmt.Printf("%s", out)
+		shellCmd := exec.Command("/bin/sh", "-c", cmdStr)
 
+		// Redirect output data
+		shellCmd.Stdout = os.Stdout
+		shellCmd.Stderr = os.Stderr
+		shellCmd.Run()
+
+		// Output
+		out, _ := shellCmd.Output()  
+		fmt.Printf("%s", out)
 	},
 }
 
