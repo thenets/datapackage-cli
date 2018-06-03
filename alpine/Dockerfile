@@ -27,7 +27,7 @@ RUN set -x \
     && chown -R 1000.1000 $HOME
 
 # Copy files
-ADD *.sh $HOME/
+ADD entrypoint.sh $HOME/
 RUN set -x \
     # Add entrypoint file
     && chmod +x $HOME/entrypoint.sh \
