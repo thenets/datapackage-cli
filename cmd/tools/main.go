@@ -93,3 +93,17 @@ func GetDockerCommand(processName string) string {
 
 	return cmdStr
 }
+
+// IsCommandAvailable check true if command is available
+func IsCommandAvailable(name string) bool {
+	cmd := exec.Command("/bin/sh", "-c", "command -v "+name)
+	if err := cmd.Run(); err != nil {
+			return false
+	}
+	return true
+}
+
+// GetSupportMessage return the Brasil.io default support message
+func GetSupportMessage() string {
+	return "# Se precisar de suporte, acesse: https://chat.brasil.io/"
+}
