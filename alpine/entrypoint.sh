@@ -6,7 +6,7 @@ COLOR_DEFAULT='\033[0m'
 
 # Creater virtualenv if not exist
 if [ ! -f env/bin/activate ]; then 
-    echo -e "$(COLOR_CYAN)# CRIANDO VIRTUALENV$(COLOR_DEFAULT)"
+    echo -e "$COLOR_CYAN# CRIANDO VIRTUALENV$COLOR_DEFAULT"
     virtualenv -p python3 env
     echo ""
 fi
@@ -24,7 +24,7 @@ if [ -f $PIP_FILE ]; then
 
     # Install dependencies if not cached
     if [ ! "$md5" = "$md5_cached"  ]; then
-        echo -e "$(COLOR_CYAN)# BAIXANDO DEPENDÊNCIAS$(COLOR_DEFAULT)"
+        echo -e "$COLOR_CYAN# BAIXANDO DEPENDÊNCIAS$COLOR_DEFAULT"
         pip install -r src/pip-requirements.txt
         echo ""
         # cache new hash

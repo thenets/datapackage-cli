@@ -33,7 +33,7 @@ RUN set -x \
     && chmod +x $HOME/entrypoint.sh \
     # Create 'app' dir and empty file
     && mkdir -p $HOME/src \
-    && echo 'print("Volume não foi montado em /app/src")' > $HOME/src/empty.py \
+    && echo 'print("Volume não foi montado em /app/src")' > $HOME/src/capture.py \
     # HACK to fix volumes permissions
     && mkdir -p $HOME/env $HOME/src $HOME/package \
     # Set permissions
