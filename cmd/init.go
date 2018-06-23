@@ -71,7 +71,7 @@ Um código em Python será criado como exemplo para ajudar na criação de um 'd
 		}
 
 		// Remove git reference
-		os.RemoveAll(args[0]+"/.git")
+		os.RemoveAll(args[0] + "/.git")
 
 		fmt.Printf("\n[DONE] Projeto '%s' criado!\n", args[0])
 		fmt.Printf("[TIP ] Entre no diretório 'cd %s' e execute 'brasilio run' para começar! :)\n", args[0])

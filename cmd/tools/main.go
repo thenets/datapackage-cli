@@ -19,11 +19,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"os/signal"
 	"runtime"
 	"strings"
-	"syscall"
-	"time"
 
 	"github.com/fatih/color"
 )
@@ -37,32 +34,54 @@ func NewCmdProcess(cmdStr string, processName string) *exec.Cmd {
 	args := strings.Split(cmdStr, " ")
 	commandName := args[0]
 
-	i := 0                     // Remove first item from args
-	copy(args[i:], args[i+1:]) // Shift a[i+1:] left one index
-	args[len(args)-1] = ""     // Erase last element (write zero value)
-	args = args[:len(args)-1]  // Truncate slice
+	// Get the current working directory.
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 
-	shellCmd := exec.Command(commandName, args...)
-	shellCmd.Stdout = os.Stdout
-	shellCmd.Stderr = os.Stderr
+	// Transfer stdin, stdout, and stderr to the new process
+	// and also set target directory for the shell to start in.
+	pa := os.ProcAttr{
+		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		Dir:   cwd,
+	}
 
-	c := make(chan os.Signal, 2)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
+	// Get absolute path of command
+	commandPath, err := exec.LookPath(args[0])
+	if err != nil {
+		panic(err)
+	}
+
+	// Start up a new shell.
+	// Note that we supply "login" twice.
+	// -fpl means "don't prompt for PW and pass through environment."
+	fmt.Print(">> Starting a new interactive shell\n")
+	proc, err := os.StartProcess(commandPath, args, &pa)
+	if err != nil {
+		panic(err)
+	}
+
+	// Wait until user exits the shell
+	state, err := proc.Wait()
+	if err != nil {
+		panic(err)
+	}
+
+	exitCode := strings.Replace(state.String(), "exit status ", "", 1)
+
+	if exitCode == "0" {
+		color.Cyan("\n[EXIT] [CODE 0] Finalizado.\n")
+	} else {
 		// Force destroy docker container
 		if commandName == "docker" {
 			exec.Command("docker", "rm", "-f", processName).Run()
 		}
 		// Exit message
-		color.Cyan("\n\n[EXIT] Ctrl+C pressed in Terminal\n")
-		// Kill main command process
-		shellCmd.Process.Kill()
-		// Main exit
-		time.Sleep(300 * time.Millisecond)
-		os.Exit(0)
-	}()
+		color.HiYellow(fmt.Sprintf("\n[EXIT] [CODE %s] Saída inesperada.\n", exitCode))
+	}
 
+	shellCmd := exec.Command(commandName)
 	return shellCmd
 }
 
@@ -97,12 +116,12 @@ func GetDockerCommand(processName string) string {
 		envPath = "brasilio_env"
 		cmd := exec.Command("docker", "volume", "inspect", envPath)
 		if err := cmd.Run(); err != nil {
-			color.Cyan(fmt.Sprintf("\n\n[WARN] Volume '%s' não encontrado! \n", envPath))
+			color.HiYellow(fmt.Sprintf("[WARN] Volume '%s' não encontrado! \n", envPath))
 			cmd2 := exec.Command("docker", "volume", "create", envPath)
 			if err := cmd2.Run(); err != nil {
 				panic(fmt.Sprintf("Não foi possível criar o volume '%s' do Docker!", envPath))
 			}
-			color.Cyan(fmt.Sprintf("\n\n[INFO] Volume '%s' criado com sucesso. \n", envPath))
+			color.Cyan(fmt.Sprintf("[INFO] Volume '%s' criado com sucesso. \n", envPath))
 		}
 
 		// DEBUG
@@ -113,7 +132,7 @@ func GetDockerCommand(processName string) string {
 	}
 
 	// Prepare command
-	cmdStr := "docker run --rm" +
+	cmdStr := "docker run --rm -it" +
 		fmt.Sprintf(" --name=%s", processName) +
 		fmt.Sprintf(" -v=%s:/app/src", srcPath) +
 		fmt.Sprintf(" -v=%s:/app/env", envPath) +
