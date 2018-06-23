@@ -69,18 +69,12 @@ func NewCmdProcess(cmdStr string, processName string) int {
 		panic(err)
 	}
 
-	exitCode, err := strconv.Atoi(strings.Replace(state.String(), "exit status ", "", 1))
-
-	if exitCode == 0 {
-		color.Cyan("\n[EXIT] [CODE 0] Finalizado.\n")
-	} else {
-		// Force destroy docker container
-		if commandName == "docker" {
-			exec.Command("docker", "rm", "-f", processName).Run()
-		}
-		// Exit message
-		color.HiYellow(fmt.Sprintf("\n[EXIT] [CODE %d] Saída inesperada.\n", exitCode))
+	// Force destroy docker container
+	if commandName == "docker" {
+		exec.Command("docker", "rm", "-f", processName).Run()
 	}
+
+	exitCode, err := strconv.Atoi(strings.Replace(state.String(), "exit status ", "", 1))
 
 	return exitCode
 }

@@ -42,16 +42,20 @@ Além disso, os arquivos deverão ser enviados para o diretório 'package':
 - ./meu-projeto/package/juizes.csv
 - ./meu-projeto/package/politicos.csv`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Run command and redirect output data
-
+		// Benchmark
 		start := time.Now()
 
-		cmdStr := tools.GetDockerCommand("brasilio-build")
-		processCode := tools.NewCmdProcess(cmdStr, "brasilio-build")
+		// Run command in a new process
+		processName := "brasilio-build"
+		cmdStr := tools.GetDockerCommand(processName)
+		exitCode := tools.NewCmdProcess(cmdStr, processName)
 
-		if processCode == 0 {
-			elapsed := strconv.FormatFloat(time.Since(start).Seconds(), 'f', 6, 64)
-			color.Cyan(fmt.Sprintf("[TIME] %ss", elapsed))
+		// Benchmark and exit message
+		elapsed := strconv.FormatFloat(time.Since(start).Seconds(), 'f', 4, 64)
+		if exitCode == 0 {
+			color.Cyan(fmt.Sprintf("\n[DONE] [CODE %d] Time %ss\n", exitCode, elapsed))
+		} else {
+			color.HiYellow(fmt.Sprintf("\n[ERROR] [CODE %d] Time %ss\n", exitCode, elapsed))
 		}
 	},
 }
