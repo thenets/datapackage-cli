@@ -89,7 +89,7 @@ func GetDockerCommand(processName string) string {
 		fmt.Sprintf(" -v=%s:/app/src", srcPath) +
 		fmt.Sprintf(" -v=%s:/app/env", envPath) +
 		fmt.Sprintf(" -v=%s:/app/package", packagePath) +
-		" thenets/brasilio"
+		" thenets/brasilio:latest"
 
 	return cmdStr
 }
