@@ -15,10 +15,14 @@
 package cmd
 
 import (
+	"fmt"
+	"strconv"
+	"time"
+
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	tools "github.com/thenets/brasilio-cli/cmd/tools"
 )
-
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
@@ -39,9 +43,16 @@ Além disso, os arquivos deverão ser enviados para o diretório 'package':
 - ./meu-projeto/package/politicos.csv`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Run command and redirect output data
+
+		start := time.Now()
+
 		cmdStr := tools.GetDockerCommand("brasilio-build")
-		shellCmd := tools.NewCmdProcess(cmdStr, "brasilio-build")
-		shellCmd.Run()
+		processCode := tools.NewCmdProcess(cmdStr, "brasilio-build")
+
+		if processCode == 0 {
+			elapsed := strconv.FormatFloat(time.Since(start).Seconds(), 'f', 6, 64)
+			color.Cyan(fmt.Sprintf("[TIME] %ss", elapsed))
+		}
 	},
 }
 
