@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
@@ -30,7 +31,7 @@ func main() {
 }
 
 // NewCmdProcess cria um novo processo
-func NewCmdProcess(cmdStr string, processName string) *exec.Cmd {
+func NewCmdProcess(cmdStr string, processName string) int {
 	args := strings.Split(cmdStr, " ")
 	commandName := args[0]
 
@@ -56,7 +57,7 @@ func NewCmdProcess(cmdStr string, processName string) *exec.Cmd {
 	// Start up a new shell.
 	// Note that we supply "login" twice.
 	// -fpl means "don't prompt for PW and pass through environment."
-	fmt.Print(">> Starting a new interactive shell\n")
+	color.Cyan("[START] Iniciando Docker container...\n")
 	proc, err := os.StartProcess(commandPath, args, &pa)
 	if err != nil {
 		panic(err)
@@ -68,21 +69,14 @@ func NewCmdProcess(cmdStr string, processName string) *exec.Cmd {
 		panic(err)
 	}
 
-	exitCode := strings.Replace(state.String(), "exit status ", "", 1)
-
-	if exitCode == "0" {
-		color.Cyan("\n[EXIT] [CODE 0] Finalizado.\n")
-	} else {
-		// Force destroy docker container
-		if commandName == "docker" {
-			exec.Command("docker", "rm", "-f", processName).Run()
-		}
-		// Exit message
-		color.HiYellow(fmt.Sprintf("\n[EXIT] [CODE %s] Saída inesperada.\n", exitCode))
+	// Force destroy docker container
+	if commandName == "docker" {
+		exec.Command("docker", "rm", "-f", processName).Run()
 	}
 
-	shellCmd := exec.Command(commandName)
-	return shellCmd
+	exitCode, err := strconv.Atoi(strings.Replace(state.String(), "exit status ", "", 1))
+
+	return exitCode
 }
 
 // GetDockerCommand run dependencies and return basic Docker command
