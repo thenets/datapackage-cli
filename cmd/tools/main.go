@@ -15,14 +15,15 @@
 package tools
 
 import (
-	"time"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/signal"
-	"path/filepath"
+	"runtime"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/fatih/color"
 )
@@ -56,7 +57,7 @@ func NewCmdProcess(cmdStr string, processName string) *exec.Cmd {
 		// Exit message
 		color.Cyan("\n\n[EXIT] Ctrl+C pressed in Terminal\n")
 		// Kill main command process
-		shellCmd.Process.Kill() 
+		shellCmd.Process.Kill()
 		// Main exit
 		time.Sleep(300 * time.Millisecond)
 		os.Exit(0)
@@ -68,9 +69,9 @@ func NewCmdProcess(cmdStr string, processName string) *exec.Cmd {
 // GetDockerCommand run dependencies and return basic Docker command
 func GetDockerCommand(processName string) string {
 	// Get current path
-	currentPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	currentPath, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	// Virtualenv, source code and output path
@@ -82,6 +83,34 @@ func GetDockerCommand(processName string) string {
 	os.MkdirAll(srcPath, os.ModePerm)
 	os.MkdirAll(envPath, os.ModePerm)
 	os.MkdirAll(packagePath, os.ModePerm)
+
+	// Fix path for Windows
+	if runtime.GOOS == "windows" {
+		// Recreate paths
+		// TODO add support to all Windows disk letters
+		srcPath = strings.Replace(srcPath, "\\", "/", -1)
+		packagePath = strings.Replace(packagePath, "\\", "/", -1)
+		srcPath = strings.Replace(srcPath, "C:", "//c", -1)
+		packagePath = strings.Replace(packagePath, "C:", "//c", -1)
+
+		// Create volume if don't exist
+		envPath = "brasilio_env"
+		cmd := exec.Command("docker", "volume", "inspect", envPath)
+		if err := cmd.Run(); err != nil {
+			color.Cyan(fmt.Sprintf("\n\n[WARN] Volume '%s' não encontrado! \n", envPath))
+			cmd2 := exec.Command("docker", "volume", "create", envPath)
+			if err := cmd2.Run(); err != nil {
+				panic(fmt.Sprintf("Não foi possível criar o volume '%s' do Docker!", envPath))
+			}
+			color.Cyan(fmt.Sprintf("\n\n[INFO] Volume '%s' criado com sucesso. \n", envPath))
+		}
+
+		// DEBUG
+		// fmt.Println("Is Windows.")
+		// fmt.Println("envPath:", envPath)
+		// fmt.Println("srcPath:", srcPath)
+		// fmt.Println("packagePath:", packagePath)
+	}
 
 	// Prepare command
 	cmdStr := "docker run --rm" +
@@ -96,9 +125,9 @@ func GetDockerCommand(processName string) string {
 
 // IsCommandAvailable check true if command is available
 func IsCommandAvailable(name string) bool {
-	cmd := exec.Command("/bin/sh", "-c", "command -v "+name)
+	cmd := exec.Command(name, "--version")
 	if err := cmd.Run(); err != nil {
-			return false
+		return false
 	}
 	return true
 }
