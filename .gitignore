@@ -3,3 +3,5 @@
 builds/
 temp/
 teste/
+
+deploy.sh
