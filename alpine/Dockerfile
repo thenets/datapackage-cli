@@ -15,8 +15,9 @@ RUN apk --no-cache add \
 ENV HOME=/app \
     USER=brasilio
 
-# Setup Python
 WORKDIR $HOME
+
+# Setup Python
 RUN set -x \
     # Add user
     && adduser -D -u 1000 -s /bin/bash $USER \

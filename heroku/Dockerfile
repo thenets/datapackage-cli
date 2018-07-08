@@ -6,6 +6,23 @@ LABEL   io.brasil="Brasil IO" \
         description="Imagem do Brasil.io para executar os código de extração de dados." \
         maintainer="luiz@thenets.org"
 
+# Envs
+ENV USER=kratos \
+    HOME=/app
+
+USER root
+
+WORKDIR $HOME
+
+# Create user
+RUN groupadd -r -g 1000 $USER && \
+    useradd -mr -c "$USER" -d $HOME -g 1000 -u 1000 $USER
+
+# Install pip and virtualenv
+RUN set -x \
+    && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+    && python3 get-pip.py \
+    && pip install virtualenv
 
 # Copy files
 ADD entrypoint.sh $HOME/
@@ -20,4 +37,7 @@ RUN set -x \
     # Set permissions
     && chown -R 1000.1000 $HOME
 
-# TODO
+# Config
+USER $USER
+CMD ["/app/entrypoint.sh"]
+VOLUME ["$HOME/.brasilio", "$HOME/src", "$HOME/package"]
