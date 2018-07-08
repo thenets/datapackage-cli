@@ -15,7 +15,7 @@ fi
 source env/bin/activate
 
 # Install dependencies
-PIP_FILE=src/pip-requirements.txt
+PIP_FILE=./.brasilio/requirements.txt
 if [ -f $PIP_FILE ]; then
     md5_cache_file=env/pip_md5.cache
     touch $md5_cache_file
