@@ -35,11 +35,11 @@ RUN set -x \
     && mkdir -p $HOME/src \
     && echo 'print("Volume não foi montado em /app/src")' > $HOME/src/capture.py \
     # HACK to fix volumes permissions
-    && mkdir -p $HOME/env $HOME/src $HOME/package \
+    && mkdir -p $HOME/.brasilio $HOME/src $HOME/package \
     # Set permissions
     && chown -R 1000.1000 $HOME
 
 # Config
 USER $USER
 CMD ["/app/entrypoint.sh"]
-VOLUME ["$HOME/env", "$HOME/src", "$HOME/package"]
+VOLUME ["$HOME/.brasilio", "$HOME/src", "$HOME/package"]
