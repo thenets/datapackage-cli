@@ -21,6 +21,8 @@ WORKDIR $HOME
 RUN set -x \
     # Add user
     && adduser -D -u 1000 -s /bin/bash $USER \
+    # Add alias for 'python' command
+    && ln -s /usr/bin/python3 /usr/bin/python \
     # Setup virtualenv
     && python3 -m pip install pip --upgrade \
     && python3 -m pip install virtualenv \
