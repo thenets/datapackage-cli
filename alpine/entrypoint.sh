@@ -14,7 +14,7 @@ COLOR_DEFAULT='\033[0m'
 # Creater virtualenv if not exist
 if [ ! -f $VENV_PATH/bin/activate ]; then 
     echo -e "$COLOR_CYAN# CRIANDO VIRTUALENV$COLOR_DEFAULT"
-    virtualenv -p python3 env
+    virtualenv -p python3 $VENV_PATH
     echo ""
 fi
 
@@ -46,7 +46,7 @@ if [ -f $RUN_FILE ]; then
     
     # Run script
     chmod +x $RUN_FILE
-    ./$RUN_FILE
+    $RUN_FILE
 else
     # Run default Python file
     cd $SRC_PATH/
