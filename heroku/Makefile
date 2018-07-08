@@ -1,5 +1,5 @@
 NAME = thenets/brasilio
-TAG = latest
+TAG = heroku
 SHELL = /bin/bash
 
 build: pre-build docker-build post-build
