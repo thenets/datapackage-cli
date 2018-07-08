@@ -50,6 +50,12 @@ Além disso, os arquivos deverão ser enviados para o diretório 'package':
 			log.Fatal(err)
 		}
 
+		// Custom run script
+		runScriptPath := currentPath + "/run.sh"
+		if _, err := os.Stat(runScriptPath); err == nil {
+			tools.CopyFile(runScriptPath, currentPath+"/.brasilio/run.sh")
+		}
+
 		// Python dependencies
 		pythonRequirementsPath := currentPath + "/requirements.txt"
 		if _, err := os.Stat(pythonRequirementsPath); err == nil {
