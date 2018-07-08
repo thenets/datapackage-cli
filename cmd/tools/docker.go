@@ -88,13 +88,13 @@ func GetDockerCommand(processName string) string {
 	}
 
 	// Virtualenv, source code and output path
-	envPath := currentPath + "/.brasilio/env"
+	configPath := currentPath + "/.brasilio"
 	srcPath := currentPath + "/src"
 	packagePath := currentPath + "/package"
 
 	// Create all paths if not exist
 	os.MkdirAll(srcPath, os.ModePerm)
-	os.MkdirAll(envPath, os.ModePerm)
+	os.MkdirAll(configPath, os.ModePerm)
 	os.MkdirAll(packagePath, os.ModePerm)
 
 	// Fix path for Windows
@@ -107,20 +107,20 @@ func GetDockerCommand(processName string) string {
 		packagePath = strings.Replace(packagePath, "C:", "//c", -1)
 
 		// Create volume if don't exist
-		envPath = "brasilio_env"
-		cmd := exec.Command("docker", "volume", "inspect", envPath)
+		configPath = "brasilio"
+		cmd := exec.Command("docker", "volume", "inspect", configPath)
 		if err := cmd.Run(); err != nil {
-			color.HiYellow(fmt.Sprintf("[WARN] Volume '%s' não encontrado! \n", envPath))
-			cmd2 := exec.Command("docker", "volume", "create", envPath)
+			color.HiYellow(fmt.Sprintf("[WARN] Volume '%s' não encontrado! \n", configPath))
+			cmd2 := exec.Command("docker", "volume", "create", configPath)
 			if err := cmd2.Run(); err != nil {
-				panic(fmt.Sprintf("Não foi possível criar o volume '%s' do Docker!", envPath))
+				panic(fmt.Sprintf("Não foi possível criar o volume '%s' do Docker!", configPath))
 			}
-			color.Cyan(fmt.Sprintf("[INFO] Volume '%s' criado com sucesso. \n", envPath))
+			color.Cyan(fmt.Sprintf("[INFO] Volume '%s' criado com sucesso. \n", configPath))
 		}
 
 		// DEBUG
 		// fmt.Println("Is Windows.")
-		// fmt.Println("envPath:", envPath)
+		// fmt.Println("configPath:", configPath)
 		// fmt.Println("srcPath:", srcPath)
 		// fmt.Println("packagePath:", packagePath)
 	}
@@ -129,9 +129,9 @@ func GetDockerCommand(processName string) string {
 	cmdStr := "docker run --rm -it" +
 		fmt.Sprintf(" --name=%s", processName) +
 		fmt.Sprintf(" -v=%s:/app/src", srcPath) +
-		fmt.Sprintf(" -v=%s:/app/env", envPath) +
+		fmt.Sprintf(" -v=%s:/app/.brasilio", configPath) +
 		fmt.Sprintf(" -v=%s:/app/package", packagePath) +
-		" thenets/brasilio:latest"
+		" thenets/brasilio:latest sh"
 
 	return cmdStr
 }
@@ -143,9 +143,4 @@ func IsCommandAvailable(name string) bool {
 		return false
 	}
 	return true
-}
-
-// GetSupportMessage return the Brasil.io default support message
-func GetSupportMessage() string {
-	return "# Se precisar de suporte, acesse: https://chat.brasil.io/"
 }
