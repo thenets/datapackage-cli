@@ -52,6 +52,8 @@ Além disso, os arquivos deverão ser enviados para o diretório 'package':
 - ./meu-projeto/package/juizes.csv
 - ./meu-projeto/package/politicos.csv`,
 	Run: func(cmd *cobra.Command, args []string) {
+		tools.CreateDependenciesPaths()
+
 		// Get current path
 		currentPath, err := os.Getwd()
 		if err != nil {

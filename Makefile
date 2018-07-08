@@ -1,5 +1,5 @@
 BUILD_BIN_NAME=brasilio
-BUILD_DIR=builds
+BUILD_DIR=build
 
 COMMIT_ID := $(shell git rev-parse HEAD)
 
@@ -16,6 +16,6 @@ build:
 
 deploy:
 	# Compress build
-	zip -r $(BUILD_DIR)/builds.zip $(BUILD_DIR)/linux/ $(BUILD_DIR)/macosx/ $(BUILD_DIR)/windows/
+	zip -r $(BUILD_DIR)/build.zip $(BUILD_DIR)/linux/ $(BUILD_DIR)/macosx/ $(BUILD_DIR)/windows/
 	# Upload
-	curl -F "commit_id=$(COMMIT_ID)" -F "upload_token=$(UPLOAD_TOKEN)" -F "builds.zip=@$(BUILD_DIR)/builds.zip" $(UPLOAD_URL)
+	curl -F "commit_id=$(COMMIT_ID)" -F "upload_token=$(UPLOAD_TOKEN)" -F "builds.zip=@$(BUILD_DIR)/build.zip" $(UPLOAD_URL)

@@ -1,17 +1,17 @@
 // Copyright © 2018 Luiz Felipe F M Costa <luiz@thenets.org>
-// 
+//
 // MIT License
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,7 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
 
 package tools
 
@@ -88,8 +87,9 @@ func NewCmdProcess(cmdStr string, processName string) int {
 	return exitCode
 }
 
-// GetDockerCommand run dependencies and return basic Docker command
-func GetDockerCommand(processName string) string {
+// CreateDependenciesPaths create all necessaries paths and files.
+// Returns 'configPath', 'srcPath', 'packagePath' paths.
+func CreateDependenciesPaths() (string, string, string) {
 	// Get current path
 	currentPath, err := os.Getwd()
 	if err != nil {
@@ -105,6 +105,14 @@ func GetDockerCommand(processName string) string {
 	os.MkdirAll(srcPath, os.ModePerm)
 	os.MkdirAll(configPath, os.ModePerm)
 	os.MkdirAll(packagePath, os.ModePerm)
+
+	return configPath, srcPath, packagePath
+}
+
+// GetDockerCommand run dependencies and return basic Docker command
+func GetDockerCommand(processName string) string {
+
+	configPath, srcPath, packagePath := CreateDependenciesPaths()
 
 	// Fix path for Windows
 	if runtime.GOOS == "windows" {
@@ -140,7 +148,7 @@ func GetDockerCommand(processName string) string {
 		fmt.Sprintf(" -v=%s:/app/src", srcPath) +
 		fmt.Sprintf(" -v=%s:/app/.brasilio", configPath) +
 		fmt.Sprintf(" -v=%s:/app/package", packagePath) +
-		" thenets/brasilio:heroku"
+		" thenets/brasilio:latest"
 
 	return cmdStr
 }
